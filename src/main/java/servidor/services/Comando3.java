@@ -1,4 +1,4 @@
-package servidor.comandos;
+package servidor.services;
 
 import java.io.PrintStream;
 import java.net.Socket;

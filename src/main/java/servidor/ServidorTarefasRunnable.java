@@ -1,13 +1,12 @@
 package servidor;
 
-import servidor.comandos.Comando1;
-import servidor.comandos.Comando2;
-import servidor.comandos.Comando3;
+import servidor.services.*;
 
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class ServidorTarefasRunnable implements Runnable {
 
@@ -35,10 +34,16 @@ public class ServidorTarefasRunnable implements Runnable {
                     saida.println("servidor: -> confirmação comando c1 " + socket.getPort());
                    threadPool.execute(new Comando1(saida, socket));
                 } else if ("c2".equals(comando)) {
-                    saida.println("servidor: -> confirmação comando c2 " + socket.getPort());
-                    threadPool.execute(new Comando2(saida, socket));
+                    saida.println("servidor: -> confirmação comando c2 AWS + BANCO " + socket.getPort());
+                    Future<String> futureBanco = threadPool.submit(new Comando3ChamaBanco(saida, socket));
+                    Future<String> futureWs = threadPool.submit(new Comando2ChamaWS(saida, socket));
+                    threadPool.submit(new LerResultados(futureBanco, futureWs, saida));
+
+
+
+
                 } else if ("c3".equals(comando)) {
-                    threadPool.execute(new Comando3(saida,socket));
+                    threadPool.submit(new Comando3ChamaBanco(saida,socket));
                     saida.println("servidor: -> confirmação comando c3 " + socket.getPort());
                 }else if ("fim".equals(comando)) {
                     servidor.parar();
@@ -49,6 +54,7 @@ public class ServidorTarefasRunnable implements Runnable {
             }
 
             System.out.println("fechando conexao da porta " + socket.getPort());
+
             comandoCliente.close();
             comandoCliente.close();
         } catch (Exception e) {

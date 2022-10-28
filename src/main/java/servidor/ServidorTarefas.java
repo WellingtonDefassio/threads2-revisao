@@ -1,5 +1,7 @@
 package servidor;
 
+import servidor.configs.FabricaThreads;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -18,7 +20,7 @@ public class ServidorTarefas {
     public ServidorTarefas() throws Exception {
         System.out.println("--Iniciando servidor--");
         this.servidor = new ServerSocket(12345);
-        this.threadPool = Executors.newFixedThreadPool(4);
+        this.threadPool = Executors.newFixedThreadPool(8, new FabricaThreads());
         this.estaRodando = true;
 
     }
